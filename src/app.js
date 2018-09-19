@@ -1,4 +1,4 @@
-// Default enivironment to development
+// Default enivironment to 'Development'
 if (!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
 const config = require('../config');
 const express = require('express');
@@ -7,6 +7,7 @@ const MongoClient = require('mongodb').MongoClient;
 
 const indexRoute = require('./routes/index.route');
 const habitRoute = require('./routes/habits.route');
+const usersRoute = require('./routes/users.route');
 
 // Server setup
 const app = express();
@@ -25,7 +26,7 @@ MongoClient.connect(config.db.url, {useNewUrlParser: true}, (err, client) => {
   }
 });
 
-// db middleware make db avaialbe in req
+// Middleware make db avaialbe in req
 app.use((req, res, next) => {
   req.db = db;
   next();
@@ -34,6 +35,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api', indexRoute);
 app.use('/api/v1/habits', habitRoute);
+app.use('/api/v1/users', usersRoute);
 
 // Handle 404
 app.use((req, res) => {
@@ -44,7 +46,7 @@ app.use((req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-  console.log(err);
+  // console.log(err);
   // if (err.name === 'ValidationError') err.status = 400;
   // if (err.name === 'CastError') {
   //   err.message = 'Course not found for given ID';
