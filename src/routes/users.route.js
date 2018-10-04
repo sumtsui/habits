@@ -4,18 +4,18 @@ const { newError, log } = require('../myfunc');
 const ObjectID = require('mongodb').ObjectID;
 
 // Get current user
-// router.get('/', (req, res, next) => {
-//   log('req.session.userId', req.session.userId);
-//   req.db.collection('users')
-//     .findOne(
-//       {_id: new ObjectID(req.session.userId)},
-//       {fields: {password: false, _id: false }})
-//     .then(user => {
-//       if (user) return res.status(200).send(user);
-//       next(newError(400, 'Can not find current user'));
-//     })
-//     .catch(next);
-// })
+router.get('/', (req, res, next) => {
+  log('req.session.userId', req.session.userId);
+  req.db.collection('users')
+    .findOne(
+      {_id: new ObjectID(req.session.userId)},
+      {fields: {password: false, _id: false }})
+    .then(user => {
+      if (user) return res.status(200).send(user);
+      next(newError(400, 'Can not find current user'));
+    })
+    .catch(next);
+})
 
 // Check if confirmed-password matches password
 function arePasswordsMatch(req, res, next) {
@@ -71,7 +71,7 @@ router.post('/log-in', isUserAlreadyExist, (req, res, next) => {
     if (err) return next(err);
     if (result === true) {
       req.session.userId = user._id;
-      res.sendStatus(200);
+      res.status(200).json({"message": "Login success"});
     } else {
       next(newError(400, 'Incorrect password'));
     }
@@ -80,11 +80,13 @@ router.post('/log-in', isUserAlreadyExist, (req, res, next) => {
 
 // Logout
 router.get('/log-out', (req, res, next) => {
-  if (req.session) {
+  if (req.session.userId) {
     req.session.destroy(function (err) {
       if (err) return next(err);
-      res.sendStatus(200);
+      res.status(200).json({"message": "Logout success"});
     });
+  } else {
+    res.status(400).json({ "message": "No logged in user" });
   }
 });
 

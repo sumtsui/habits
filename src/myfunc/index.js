@@ -5,7 +5,7 @@ module.exports = {
       (stuff) ? 
         console.log('\n' + label + '\n', stuff)
         :
-        console.log('\n', label);
+        console.log('\nLog:', label);
     } 
   },
 

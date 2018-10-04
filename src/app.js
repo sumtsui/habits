@@ -18,28 +18,46 @@ const port = process.env.PORT || process.argv[2] || config.app.port
 app.set('port', port);
 app.use(express.json());
 
-log('config', config);
+log('config', config.db);
 
 // DB connection
 MongoClient.connect(config.db.url, {useNewUrlParser: true}, (err, client) => {
   let db;
-  if (err) myfunc.log(err);
+  if (err) log(err);
   else {
-    console.log('Successfully connected to database ' + config.db.name);
+    log('Successfully connected to database ' + config.db.name);
     db = client.db(config.db.name);
   }
 
+  app.options("*", function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", req.get("Origin") || "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    //other headers here
+    res.status(200).end();
+  });
+  
+  // Allow CROS
+  app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    next();
+  });
 
-  //use sessions for tracking logins
+  // Use sessions for tracking logins
   app.use(session({
-    secret: 'work hard',
+    secret: config.app.secret,
     resave: true,
     saveUninitialized: false,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
     },
     // Save session in DB
-    store: new MongoStore({db: db})
+    store: new MongoStore({db: db}),
+    name: 'habits'
   }));
 
   // Make DB instance avaialbe in req
@@ -63,7 +81,7 @@ MongoClient.connect(config.db.url, {useNewUrlParser: true}, (err, client) => {
   // Global error handler
   app.use((err, req, res, next) => {
     log(err);
-    res.status(err.status || 500).json(err.message);
+    res.status(err.status || 500).json({error: err.message});
   });
 
 });

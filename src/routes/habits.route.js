@@ -11,8 +11,8 @@ router.get('/all', async (req, res, next) => {
   const users = req.db.collection('users');
   users
     .findOne(
-      {_id: ObjectID(req.session.userId)}, 
-      {fields: {habits: true, _id: false}}
+      { _id: ObjectID(req.session.userId) }, 
+      { fields: { habits: true, _id: false } }
     )
     .then(habits => res.status(200).send(habits))
     .catch(next);
@@ -21,13 +21,17 @@ router.get('/all', async (req, res, next) => {
 // Create new habit 
 router.post('/new', async (req, res, next) => {
   const users = req.db.collection('users');
+  log(req.body);
   users
     .updateOne(
       {_id: ObjectID(req.session.userId)},
       { $push: {
         habits: {
           title: req.body.title,
-          _id: new ObjectID
+          _id: ObjectID(),
+          records: [],
+          isGood: req.body.isGood,
+          pos: -1
         }
       }}
     )
@@ -35,19 +39,27 @@ router.post('/new', async (req, res, next) => {
     .catch(next);
 })
 
-// Get single habit by ID
-// router.get('/:id', async (req, res, next) => {
-//   const users = req.db.collection('users');
-//   users
-//     .find(
-//       {_id: ObjectID(req.session.userId)},
-//       {habits: {$elemMatch: 
-//         {_id: ObjectID(req.params.id)}
-//       }}
-//     )
-//     .then(doc => res.status(200).json(doc))
-//     .catch(next);
-// })
+// Save changes (for now, only update pos)
+router.put('/save-all', async (req, res, next) => {
+  const { db, body, session } = req;
+  const users = db.collection('users');
+  const data = body.habits.map(({title, pos}) => ({ title, pos }));
+
+  users
+    .findOne({ _id: ObjectID(session.userId) }, { fields: { habits: 1, _id: 0 } })
+    .then(({habits}) => {
+      habits.forEach(habit => {
+        // not comparing ObjectID here, they are really annoying and messy
+        habit.pos = data.filter(d => ((d.title) === habit.title))[0].pos;
+        users.updateOne(
+          { 'habits._id': ObjectID(habit._id) },
+          { $set: { 'habits.$.pos': habit.pos } }
+        )
+      })
+    })
+    .then(() => res.status(200).json({ result: 'saved' }))
+    .catch(next)
+})
 
 // Delete a habit
 router.delete('/:id', (req, res, next) => {
@@ -56,27 +68,23 @@ router.delete('/:id', (req, res, next) => {
     .updateOne(
       {_id: ObjectID(req.session.userId)},
       {
-        $pull: {
-          habits: {
-            _id: ObjectID(req.params.id),
-          }
-        }
+        $pull: { habits: { _id: ObjectID(req.params.id) } }
       }
     )
     .then(r => res.status(200).json({result: r.result}))
     .catch(next);
 })
 
-// Edit habit title
+// Edit habit Title and isGood
 router.put('/:id', (req, res, next) => {
-// db.users.updateOne({'habits.title': 'weak up early'}, {'$set': {'habits.$.title': 'coding'}})
   const users = req.db.collection('users');
   users
     .updateOne(
-      {'habits._id': ObjectID(req.params.id)},
+      { 'habits._id': ObjectID(req.params.id)},
       {
         $set: {
           'habits.$.title': req.body.title,
+          'habits.$.isGood': req.body.isGood
         }
       }
     )
@@ -89,28 +97,22 @@ router.post('/:id/records/new', (req, res, next) => {
   const users = req.db.collection('users');
   users
     .updateOne(
-      {'habits._id': ObjectID(req.params.id)},
-      {
-        $push: {
-          'habits.$.records': new Date(),
-        }
-      }
+      { "habits._id": ObjectID(req.params.id) },
+      { $push: { 'habits.$.records': new Date() } }
     )
-    .then(r => res.status(200).json({result: r.result}))
+    .then(r => {
+      res.status(200).json({result: r.result})
+    })
     .catch(next);
 })
 
-// Delete the most recent recording 
+// Undo 'did it'
 router.delete('/:id/records/', (req, res, next) => {
   const users = req.db.collection('users');
   users
     .updateOne(
-      {'habits._id': ObjectID(req.params.id)},
-      {
-        $pop: {
-          'habits.$.records': 1,
-        }
-      }
+      { 'habits._id': ObjectID(req.params.id)},
+      { $pop: { 'habits.$.records': 1 } }
     )
     .then(r => res.status(200).json({result: r.result}))
     .catch(next);

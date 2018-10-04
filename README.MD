@@ -1,6 +1,3 @@
 TODO:
 
-authentication
-authorization
-validation
-testing
+- validation

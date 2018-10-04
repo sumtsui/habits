@@ -1,4 +1,4 @@
-// require('dotenv').config();
+require('dotenv').config();
 
 const env = process.env.NODE_ENV;
 
@@ -8,8 +8,9 @@ const development = {
     name: 'habit-api'
   },
   app: {
-    port: 3000
-  }
+    port: 3000,
+    secret: process.env.HABIT_API_SECRET,
+  },
 };
 
 const test = {
@@ -18,8 +19,9 @@ const test = {
     name: 'habit-api-test'
   },
   app: {
-    port: 3333
-  }
+    port: 3333,
+    secret: process.env.HABIT_API_SECRET,
+  },
 }
 
 const config = {
