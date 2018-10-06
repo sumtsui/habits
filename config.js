@@ -12,6 +12,7 @@ const development = {
   app: {
     port: 3000,
     secret: process.env.HABIT_API_SECRET,
+    allowedOrigin: 'http://localhost:3001'
   },
 };
 
@@ -25,6 +26,7 @@ const production = {
   app: {
     port: 3000,
     secret: process.env.HABIT_API_SECRET,
+    allowedOrigin: 'https://habit-logging-app.herokuapp.com'
   },
 };
 
