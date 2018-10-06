@@ -2,6 +2,7 @@ const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const { newError, log } = require('../myfunc');
 const ObjectID = require('mongodb').ObjectID;
+const validateLogin = require('../middleware/validateLogin');
 
 // Get current user
 router.get('/', (req, res, next) => {
@@ -19,7 +20,7 @@ router.get('/', (req, res, next) => {
 
 // Check if confirmed-password matches password
 function arePasswordsMatch(req, res, next) {
-  if (req.body.password !== req.body.confPassword) {
+  if (req.body.password !== req.body.repeatPassword) {
     return next(newError(400, 'Two password inputs do not match'));
   }
   next();
@@ -27,7 +28,7 @@ function arePasswordsMatch(req, res, next) {
 
 // Check if email already exist  
 function isEmailAvailable(req, res, next) {
-  req.db.collection('users').findOne({email: req.body.email})
+  req.db.collection('users').findOne({email: req.body.email.toLowerCase()})
     .then(user => {
       if (user) return next(newError(400, 'This email has been registered'));
       res.locals.user = user;
@@ -36,18 +37,20 @@ function isEmailAvailable(req, res, next) {
     .catch(next);
 }
 
-// Sign up
-router.post('/sign-up', arePasswordsMatch, isEmailAvailable, (req, res, next) => {
+// Sign up (use validateLogin middleware as well for signup info validation)
+router.post('/sign-up', validateLogin, arePasswordsMatch, isEmailAvailable, (req, res, next) => {
   bcrypt.hash(req.body.password, 10, (err, hash) => {
     if (err) return next(err);
     req.db.collection('users')
       .insertOne({
-        email: req.body.email,
-        password: hash
+        email: req.body.email.toLowerCase(),
+        password: hash,
+        habits: []
       })
-      .then(user => {
-        req.session.userId = user._id;
-        res.sendStatus(201);
+      .then(result => {
+        const id = result.ops[0]._id;
+        req.session.userId = id;
+        res.status(201).json({ "message": "New user created" });
       })
       .catch(next);
   })
@@ -55,7 +58,7 @@ router.post('/sign-up', arePasswordsMatch, isEmailAvailable, (req, res, next) =>
 
 // Check if user exist  
 function isUserAlreadyExist(req, res, next) {
-  req.db.collection('users').findOne({email: req.body.email})
+  req.db.collection('users').findOne({email: req.body.email.toLowerCase()})
     .then(user => {
       if (!user) return next(newError(400, 'User not found for given email'));
       res.locals.user = user;
@@ -65,7 +68,7 @@ function isUserAlreadyExist(req, res, next) {
 }
 
 // Log in
-router.post('/log-in', isUserAlreadyExist, (req, res, next) => {
+router.post('/log-in', validateLogin, isUserAlreadyExist, (req, res, next) => {
   const {user} = res.locals;
   bcrypt.compare(req.body.password, user.password, function (err, result) {
     if (err) return next(err);

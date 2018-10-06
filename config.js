@@ -4,8 +4,10 @@ const env = process.env.NODE_ENV;
 
 const development = {
   db: {
-    url: 'mongodb://localhost:27017',
-    name: 'habit-api'
+    mlab_url: process.env.HABIT_API_MLAB_URL,
+    mlab_name: 'habits',
+    local_url: 'mongodb://localhost:27017',
+    local_name: 'habit-api',
   },
   app: {
     port: 3000,
@@ -15,7 +17,8 @@ const development = {
 
 const test = {
   db: {
-    url: 'mongodb://localhost:27017',
+    mlab_url: process.env.HABIT_API_MLAB_URL,
+    local_url: 'mongodb://localhost:27017',
     name: 'habit-api-test'
   },
   app: {

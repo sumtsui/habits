@@ -21,20 +21,20 @@ app.use(express.json());
 log('config', config.db);
 
 // DB connection
-MongoClient.connect(config.db.url, {useNewUrlParser: true}, (err, client) => {
+MongoClient.connect(config.db.mlab_url, {useNewUrlParser: true}, (err, client) => {
   let db;
   if (err) log(err);
   else {
-    log('Successfully connected to database ' + config.db.name);
-    db = client.db(config.db.name);
+    log('Successfully connected to database ' + config.db.mlab_name);
+    db = client.db(config.db.mlab_name);
   }
-
+  
+  // cater CROS preflight request
   app.options("*", function (req, res, next) {
     res.header("Access-Control-Allow-Origin", req.get("Origin") || "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.header("Access-Control-Allow-Credentials", "true");
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    //other headers here
     res.status(200).end();
   });
   
@@ -56,7 +56,7 @@ MongoClient.connect(config.db.url, {useNewUrlParser: true}, (err, client) => {
       maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
     },
     // Save session in DB
-    store: new MongoStore({db: db}),
+    store: new MongoStore({ db }),
     name: 'habits'
   }));
 

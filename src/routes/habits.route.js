@@ -1,15 +1,31 @@
 const router = require('express').Router();
 const ObjectID = require('mongodb').ObjectID;
 const requireLogin = require('../middleware/requireLogin');
-const { log } = require('../myfunc');
+const validateHabit = require('../middleware/validateHabit');
+const { log, newError } = require('../myfunc');
 
 // Make all habits routes require login
 router.use(requireLogin);
 
+// Check if habit title already exist  
+function isTitleAvailable(req, res, next) {
+  req.db.collection('users')
+    .findOne(
+      { _id: ObjectID(req.session.userId) }, 
+      { fields: { habits: true, _id: false } }
+    )
+    .then(({ habits }) => {
+      if (habits.filter(h => h.title === req.body.title.toLowerCase()).length > 0) {
+        return next(newError(400, 'Habit already exists'));
+      }
+      next();
+    })
+    .catch(next);
+}
+
 // Get all habits
 router.get('/all', async (req, res, next) => {
-  const users = req.db.collection('users');
-  users
+  req.db.collection('users')
     .findOne(
       { _id: ObjectID(req.session.userId) }, 
       { fields: { habits: true, _id: false } }
@@ -19,19 +35,17 @@ router.get('/all', async (req, res, next) => {
 })
 
 // Create new habit 
-router.post('/new', async (req, res, next) => {
-  const users = req.db.collection('users');
-  log(req.body);
-  users
+router.post('/new', validateHabit, isTitleAvailable, (req, res, next) => {
+  req.db.collection('users')
     .updateOne(
       {_id: ObjectID(req.session.userId)},
       { $push: {
         habits: {
-          title: req.body.title,
+          title: req.body.title.toLowerCase(),
           _id: ObjectID(),
           records: [],
           isGood: req.body.isGood,
-          pos: -1
+          pos: 1000 // new habit at bottom
         }
       }}
     )
@@ -43,6 +57,7 @@ router.post('/new', async (req, res, next) => {
 router.put('/save-all', async (req, res, next) => {
   const { db, body, session } = req;
   const users = db.collection('users');
+  // only keep title and pos from req.body
   const data = body.habits.map(({title, pos}) => ({ title, pos }));
 
   users
@@ -50,7 +65,7 @@ router.put('/save-all', async (req, res, next) => {
     .then(({habits}) => {
       habits.forEach(habit => {
         // not comparing ObjectID here, they are really annoying and messy
-        habit.pos = data.filter(d => ((d.title) === habit.title))[0].pos;
+        habit.pos = data.filter(d => (d.title.toLowerCase() === habit.title))[0].pos;
         users.updateOne(
           { 'habits._id': ObjectID(habit._id) },
           { $set: { 'habits.$.pos': habit.pos } }
@@ -63,8 +78,7 @@ router.put('/save-all', async (req, res, next) => {
 
 // Delete a habit
 router.delete('/:id', (req, res, next) => {
-  const users = req.db.collection('users');
-  users
+  req.db.collection('users')
     .updateOne(
       {_id: ObjectID(req.session.userId)},
       {
@@ -77,8 +91,7 @@ router.delete('/:id', (req, res, next) => {
 
 // Edit habit Title and isGood
 router.put('/:id', (req, res, next) => {
-  const users = req.db.collection('users');
-  users
+  req.db.collection('users')
     .updateOne(
       { 'habits._id': ObjectID(req.params.id)},
       {
@@ -94,8 +107,7 @@ router.put('/:id', (req, res, next) => {
 
 // Record 'did it'
 router.post('/:id/records/new', (req, res, next) => {
-  const users = req.db.collection('users');
-  users
+  req.db.collection('users')
     .updateOne(
       { "habits._id": ObjectID(req.params.id) },
       { $push: { 'habits.$.records': new Date() } }
@@ -108,8 +120,7 @@ router.post('/:id/records/new', (req, res, next) => {
 
 // Undo 'did it'
 router.delete('/:id/records/', (req, res, next) => {
-  const users = req.db.collection('users');
-  users
+  req.db.collection('users')
     .updateOne(
       { 'habits._id': ObjectID(req.params.id)},
       { $pop: { 'habits.$.records': 1 } }
