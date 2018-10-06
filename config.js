@@ -42,7 +42,8 @@ const test = {
 
 const config = {
   development,
-  test
+  test,
+  production
 };
 
 module.exports = config[env];
