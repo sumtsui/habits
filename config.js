@@ -15,6 +15,19 @@ const development = {
   },
 };
 
+const production = {
+  db: {
+    mlab_url: process.env.HABIT_API_MLAB_URL,
+    mlab_name: 'habits',
+    local_url: 'mongodb://localhost:27017',
+    local_name: 'habit-api',
+  },
+  app: {
+    port: 3000,
+    secret: process.env.HABIT_API_SECRET,
+  },
+};
+
 const test = {
   db: {
     mlab_url: process.env.HABIT_API_MLAB_URL,
