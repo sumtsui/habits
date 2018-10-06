@@ -2,10 +2,10 @@
   "name": "habits-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/server.js",
+  "main": "src/server.js",
   "scripts": {
     "test": "NODE_ENV=test jest --watchAll --verbose",
-    "start": "node ./src/server.js"
+    "start": "node src/server.js"
   },
   "keywords": [],
   "author": "",
