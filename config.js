@@ -26,7 +26,7 @@ const production = {
   app: {
     port: 3000,
     secret: process.env.HABIT_API_SECRET,
-    allowedOrigin: 'https://habit-logging-app.herokuapp.com'
+    allowedOrigin: 'http://habit-logging-app.herokuapp.com'
   },
 };
 
