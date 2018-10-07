@@ -7,6 +7,7 @@ const { log, newError } = require('./myfunc');
 const MongoClient = require('mongodb').MongoClient;
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
+const cors = require('cors');
 // Import routes
 const indexRoute = require('./routes/index.route');
 const habitRoute = require('./routes/habits.route');
@@ -18,6 +19,24 @@ const port = process.env.PORT || process.argv[2] || config.app.port
 app.set('port', port);
 app.use(express.json());
 
+// cater CROS preflight request
+app.options("*", function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", req.get("Origin") || "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.status(200).end();
+});
+
+// Allow CROS
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", req.get("Origin") || "*");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  next();
+});
+
 log('config', config.db);
 
 // DB connection
@@ -28,24 +47,6 @@ MongoClient.connect(config.db.mlab_url, {useNewUrlParser: true}, (err, client) =
     log('Successfully connected to database ' + config.db.mlab_name);
     db = client.db(config.db.mlab_name);
   }
-  
-  // cater CROS preflight request
-  app.options("*", function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", req.get("Origin") || "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.header("Access-Control-Allow-Credentials", "true");
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.status(200).end();
-  });
-  
-  // Allow CROS
-  app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", req.get("Origin") || "*");
-    res.header("Access-Control-Allow-Credentials", "true");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    next();
-  });
 
   // Use sessions for tracking logins
   app.use(session({
