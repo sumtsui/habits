@@ -57,6 +57,7 @@ MongoClient.connect(config.db.mlab_url, {useNewUrlParser: true}, (err, client) =
       maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
     },
     // Save session in DB
+    cookie: { httpOnly: false },
     store: new MongoStore({ db }),
     name: 'habits'
   }));
