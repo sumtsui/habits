@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const { newError, log } = require('../myfunc');
 const ObjectID = require('mongodb').ObjectID;
 const validateLogin = require('../middleware/validateLogin');
+const jwt = require('jsonwebtoken');
+const config = require('../../config');
 
 // Get current user
 router.get('/', (req, res, next) => {
@@ -49,8 +51,12 @@ router.post('/sign-up', validateLogin, arePasswordsMatch, isEmailAvailable, (req
       })
       .then(result => {
         const id = result.ops[0]._id;
-        req.session.userId = id;
-        res.status(201).json({ "message": "New user created" });
+        // req.session.userId = id;
+        // res.status(201).json({ "message": "New user created" });
+        
+        const token = jwt.sign({ id }, config.app.jwtPrivateKey);
+        res.send(token)
+
       })
       .catch(next);
   })
@@ -73,8 +79,11 @@ router.post('/log-in', validateLogin, isUserAlreadyExist, (req, res, next) => {
   bcrypt.compare(req.body.password, user.password, function (err, result) {
     if (err) return next(err);
     if (result === true) {
-      req.session.userId = user._id;
-      res.status(200).json({"message": "Login success"});
+      // req.session.userId = user._id;
+      // res.status(200).json({"message": "Login success"});
+      const token = jwt.sign({ id: user._id }, config.app.jwtPrivateKey);
+      res.header('habits-auth-token', token).status(200).json({ "message": "Login success" })
+      
     } else {
       next(newError(400, 'Incorrect password'));
     }

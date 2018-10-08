@@ -11,7 +11,7 @@ router.use(requireLogin);
 function isTitleAvailable(req, res, next) {
   req.db.collection('users')
     .findOne(
-      { _id: ObjectID(req.session.userId) }, 
+      { _id: ObjectID(req.userID) }, 
       { fields: { habits: true, _id: false } }
     )
     .then(({ habits }) => {
@@ -27,7 +27,7 @@ function isTitleAvailable(req, res, next) {
 router.get('/all', async (req, res, next) => {
   req.db.collection('users')
     .findOne(
-      { _id: ObjectID(req.session.userId) }, 
+      { _id: ObjectID(req.userID) }, 
       { fields: { habits: true, _id: false } }
     )
     .then(habits => res.status(200).send(habits))
@@ -38,7 +38,7 @@ router.get('/all', async (req, res, next) => {
 router.post('/new', validateHabit, isTitleAvailable, (req, res, next) => {
   req.db.collection('users')
     .updateOne(
-      {_id: ObjectID(req.session.userId)},
+      {_id: ObjectID(req.userID)},
       { $push: {
         habits: {
           title: req.body.title.toLowerCase(),
@@ -80,7 +80,7 @@ router.put('/save-all', async (req, res, next) => {
 router.delete('/:id', (req, res, next) => {
   req.db.collection('users')
     .updateOne(
-      {_id: ObjectID(req.session.userId)},
+      {_id: ObjectID(req.userID)},
       {
         $pull: { habits: { _id: ObjectID(req.params.id) } }
       }
