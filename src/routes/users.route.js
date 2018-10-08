@@ -50,11 +50,7 @@ router.post('/sign-up', validateLogin, arePasswordsMatch, isEmailAvailable, (req
       .then(result => {
         const id = result.ops[0]._id;
         req.session.userId = id;
-        res.set({
-          'my-cookie': req.session,
-          'Location': '/'
-        }).send(201);
-        // res.status(201).json({ "message": "New user created" });
+        res.status(201).json({ "message": "New user created" });
       })
       .catch(next);
   })
