@@ -53,13 +53,10 @@ MongoClient.connect(config.db.mlab_url, {useNewUrlParser: true}, (err, client) =
     secret: config.app.secret,
     resave: true,
     saveUninitialized: false,
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
-    },
-    // Save session in DB
-    store: new MongoStore({ db }),
+    cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 }, // 1 week
+    store: new MongoStore({ db }), // Save session in DB
     name: 'habits',
-    cookie: { httpOnly: false },
+    cookie: { path: '/', httpOnly: false, secure: false, maxAge: null },
   }));
 
   // Make DB instance avaialbe in req
