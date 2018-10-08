@@ -19,7 +19,7 @@ const port = process.env.PORT || process.argv[2] || config.app.port
 app.set('port', port);
 app.use(express.json());
 
-// // cater CROS preflxght request
+// // cater CROS preflight request
 app.options("*", function (req, res, next) {
   res.header("Access-Control-Allow-Origin", req.get("Origin") || "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
