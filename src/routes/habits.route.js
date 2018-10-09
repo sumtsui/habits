@@ -31,7 +31,6 @@ router.get('/all', async (req, res, next) => {
       { fields: { habits: true, _id: false } }
     )
     .then(habits => {
-      res.set('jwtCookie', req.cookies)
       res.status(200).send(habits)
     })
     .catch(next);
