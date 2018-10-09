@@ -57,13 +57,13 @@ router.post('/new', validateHabit, isTitleAvailable, (req, res, next) => {
 
 // Save changes (for now, only update pos)
 router.put('/save-all', async (req, res, next) => {
-  const { db, body, session } = req;
+  const { db, body, userID } = req;
   const users = db.collection('users');
   // only keep title and pos from req.body
   const data = body.habits.map(({title, pos}) => ({ title, pos }));
 
   users
-    .findOne({ _id: ObjectID(session.userId) }, { fields: { habits: 1, _id: 0 } })
+    .findOne({ _id: ObjectID(userID) }, { fields: { habits: 1, _id: 0 } })
     .then(({habits}) => {
       habits.forEach(habit => {
         // not comparing ObjectID here, they are really annoying and messy

@@ -8,10 +8,9 @@ const config = require('../../config');
 
 // Get current user
 router.get('/', (req, res, next) => {
-  log('req.session.userId', req.session.userId);
   req.db.collection('users')
     .findOne(
-      {_id: new ObjectID(req.session.userId)},
+      {_id: new ObjectID(req.userID)},
       {fields: {password: false, _id: false }})
     .then(user => {
       if (user) return res.status(200).send(user);
@@ -89,15 +88,15 @@ router.post('/log-in', validateLogin, isUserAlreadyExist, (req, res, next) => {
 })
 
 // Logout
-router.get('/log-out', (req, res, next) => {
-  if (req.session.userId) {
-    req.session.destroy(function (err) {
-      if (err) return next(err);
-      res.status(200).json({"message": "Logout success"});
-    });
-  } else {
-    res.status(400).json({ "message": "No logged in user" });
-  }
-});
+// router.get('/log-out', (req, res, next) => {
+//   if (req.session.userId) {
+//     req.session.destroy(function (err) {
+//       if (err) return next(err);
+//       res.status(200).json({"message": "Logout success"});
+//     });
+//   } else {
+//     res.status(400).json({ "message": "No logged in user" });
+//   }
+// });
 
 module.exports = router;
