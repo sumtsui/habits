@@ -3,8 +3,7 @@ const config = require('../../config');
 const { newError, log } = require('../myfunc/');
 
 function requiresLogin(req, res, next) {
-  const token = req.header('habits-auth-token');
-  log('cookies', req.cookies)
+  const token = req.header('jwt');
 
   if (!token) return next(newError(401, 'No token provided. Access denied. '));
 
