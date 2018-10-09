@@ -19,10 +19,10 @@ const port = process.env.PORT || process.argv[2] || config.app.port
 app.set('port', port);
 app.use(express.json());
 
-// // cater CROS preflight request
+// // cater CROS preflxght request
 app.options("*", function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", 'https://habit-logging-app.herokuapp.com');
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Origin", req.get("Origin") || "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Habits-Auth-Token");
   res.header("Access-Control-Allow-Credentials", "true");
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
   res.status(200).end();
@@ -30,7 +30,7 @@ app.options("*", function (req, res, next) {
 
 // // Allow CROS
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", 'https://habit-logging-app.herokuapp.com');
+  res.header("Access-Control-Allow-Origin", req.get("Origin") || "*");
   res.header("Access-Control-Allow-Credentials", "true");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');

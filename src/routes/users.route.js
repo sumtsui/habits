@@ -55,7 +55,7 @@ router.post('/sign-up', validateLogin, arePasswordsMatch, isEmailAvailable, (req
         // res.status(201).json({ "message": "New user created" });
         
         const token = jwt.sign({ id }, config.app.jwtPrivateKey);
-        res.send(token)
+        res.status(200).json({ 'authToken': token })
 
       })
       .catch(next);
@@ -81,9 +81,15 @@ router.post('/log-in', validateLogin, isUserAlreadyExist, (req, res, next) => {
     if (result === true) {
       // req.session.userId = user._id;
       // res.status(200).json({"message": "Login success"});
+      const cookieOptions = {
+        httpOnly: true,
+        expires: 0
+      }
       const token = jwt.sign({ id: user._id }, config.app.jwtPrivateKey);
-      res.header('habits-auth-token', token).status(200).json({ "message": "Login success" })
-      
+      res.cookie('habitsAccessJwt', token, cookieOptions)
+      res.set('habits-auth-token', token);
+      res.status(200).json({'authToken': token});
+
     } else {
       next(newError(400, 'Incorrect password'));
     }
