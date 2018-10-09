@@ -7,6 +7,7 @@ const { log, newError } = require('./myfunc');
 const MongoClient = require('mongodb').MongoClient;
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
+const cookieParser = require('cookie-parser')
 // Import routes
 const indexRoute = require('./routes/index.route');
 const habitRoute = require('./routes/habits.route');
@@ -18,6 +19,7 @@ const port = process.env.PORT || process.argv[2] || config.app.port
 
 app.set('port', port);
 app.use(express.json());
+app.use(cookieParser());
 
 // // cater CROS preflxght request
 app.options("*", function (req, res, next) {
