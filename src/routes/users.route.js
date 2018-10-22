@@ -50,8 +50,6 @@ router.post('/sign-up', validateLogin, arePasswordsMatch, isEmailAvailable, (req
       })
       .then(result => {
         const id = result.ops[0]._id;
-        // req.session.userId = id;
-        // res.status(201).json({ "message": "New user created" });
         const token = jwt.sign({ id }, config.app.jwtPrivateKey);
         res.status(200).json({ 'jwt': token })
       })
@@ -76,8 +74,6 @@ router.post('/log-in', validateLogin, isUserAlreadyExist, (req, res, next) => {
   bcrypt.compare(req.body.password, user.password, function (err, result) {
     if (err) return next(err);
     if (result === true) {
-      // req.session.userId = user._id;
-      // res.status(200).json({"message": "Login success"});
       const token = jwt.sign({ id: user._id }, config.app.jwtPrivateKey);
       res.status(200).json({ 'jwt': token })
 
@@ -86,17 +82,5 @@ router.post('/log-in', validateLogin, isUserAlreadyExist, (req, res, next) => {
     }
   })
 })
-
-// Logout
-// router.get('/log-out', (req, res, next) => {
-//   if (req.session.userId) {
-//     req.session.destroy(function (err) {
-//       if (err) return next(err);
-//       res.status(200).json({"message": "Logout success"});
-//     });
-//   } else {
-//     res.status(400).json({ "message": "No logged in user" });
-//   }
-// });
 
 module.exports = router;

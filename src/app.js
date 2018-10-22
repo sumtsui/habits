@@ -6,7 +6,6 @@ const express = require('express');
 const { log, newError } = require('./myfunc');
 const MongoClient = require('mongodb').MongoClient;
 const session = require('express-session');
-const MongoStore = require('connect-mongo')(session);
 const cookieParser = require('cookie-parser')
 // Import routes
 const indexRoute = require('./routes/index.route');
@@ -30,12 +29,11 @@ app.options("*", function (req, res, next) {
   res.status(200).end();
 });
 
-// // Allow CROS
+// // Allow CORS
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", req.get("Origin") || "*");
   res.header("Access-Control-Allow-Credentials", "true");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  // res.header('Access-Control-Expose-Headers', 'Habits-Jwt');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
   next();
 });
@@ -50,17 +48,6 @@ MongoClient.connect(config.db.mlab_url, {useNewUrlParser: true}, (err, client) =
     log('Successfully connected to database ' + config.db.mlab_name);
     db = client.db(config.db.mlab_name);
   }
-
-  // Use sessions for tracking logins
-  // app.use(session({
-  //   secret: config.app.secret,
-  //   resave: true,
-  //   saveUninitialized: false,
-  //   cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 }, // 1 week
-  //   store: new MongoStore({ db }), // Save session in DB
-  //   name: 'habits',
-  //   cookie: { httpOnly: false },
-  // }));
 
   // Make DB instance avaialbe in req
   app.use((req, res, next) => {

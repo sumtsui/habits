@@ -108,6 +108,9 @@ router.put('/:id', (req, res, next) => {
 })
 
 // Record 'did it'
+
+// db.users.updateOne({'habits._id': ObjectId("5bbcb469bbcf3b00156bec50")}, {$push: {'habits.$.records': ISODate("2018-09-26T14:00:23.894Z")}})
+
 router.post('/:id/records/new', (req, res, next) => {
   req.db.collection('users')
     .updateOne(
