@@ -1,5 +1,4 @@
 import * as types from './ActionTypes';
-import config from '../config';
 
 export const onTextChanged = e => ({
   type: types.AUTH_TEXT_CHANGED,
@@ -10,7 +9,7 @@ export const loginUser = (e, data) => {
   e.preventDefault();
   return (dispatch) => {
     dispatch({ type: types.AUTH_ASYNC_START });
-    fetch(`${config.route}/api/v1/users/log-in`, {
+    fetch(`/api/v1/users/log-in`, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, cors, *same-origin
       headers: { "Content-Type": "application/json; charset=utf-8" },
@@ -37,7 +36,7 @@ export const signupUser = (e, data) => {
   e.preventDefault();
   return (dispatch) => {
     dispatch({ type: types.AUTH_ASYNC_START });
-    fetch(`${config.route}/api/v1/users/sign-up`, {
+    fetch(`/api/v1/users/sign-up`, {
       method: "POST", 
       mode: "cors", 
       credentials: "include",

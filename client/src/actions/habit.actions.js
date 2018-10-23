@@ -1,5 +1,4 @@
 import * as types from './ActionTypes';
-import config from '../config';
 
 export const getHabits = () => {
   const jwt = localStorage.getItem('jwt');
@@ -8,7 +7,7 @@ export const getHabits = () => {
 
   return (dispatch) => {
     dispatch({ type: types.HABIT_ASYNC_START });
-    fetch(`${config.route}/api/v1/habits/all`, {
+    fetch(`/api/v1/habits/all`, {
       headers 
     })
       .then(res => res.json())
@@ -34,7 +33,7 @@ export const addNewHabit = (data, history) => {
 
   return (dispatch) => {
     dispatch({ type: types.HABIT_ASYNC_START });
-    fetch(`${config.route}/api/v1/habits/new`, {
+    fetch(`/api/v1/habits/new`, {
       method: "POST",
       mode: "cors", 
       credentials: "include", 
@@ -64,7 +63,7 @@ export const saveChange = (data) => {
 
   return (dispatch) => {
     dispatch({ type: types.HABIT_ASYNC_START });
-    fetch(`${config.route}/api/v1/habits/save-all`, {
+    fetch(`/api/v1/habits/save-all`, {
       method: "PUT",
       mode: "cors",
       credentials: "include",
@@ -89,7 +88,7 @@ export const recordHabit = (target, id) => {
   return (dispatch) => {
     dispatch({ type: types.HABIT_RECORD_TOGGLED, payload: id });
     dispatch({ type: types.HABIT_ASYNC_START });
-    fetch(`${config.route}/api/v1/habits/${id}/records/new`, {
+    fetch(`/api/v1/habits/${id}/records/new`, {
       method: "POST",
       mode: "cors",
       credentials: "include",
@@ -115,7 +114,7 @@ export const undoRecordHabit = (target, id) => {
   return (dispatch) => {
     dispatch({ type: types.HABIT_RECORD_TOGGLED, payload: id });
     dispatch({ type: types.HABIT_ASYNC_START });
-    fetch(`${config.route}/api/v1/habits/${id}/records/`, {
+    fetch(`/api/v1/habits/${id}/records/`, {
       method: "DELETE",
       mode: "cors",
       credentials: "include",
@@ -141,7 +140,7 @@ export const deleteHabit = id => {
 
   return (dispatch) => {
     dispatch({ type: types.HABIT_ASYNC_START, payload: id });
-    fetch(`${config.route}/api/v1/habits/${id}/`, {
+    fetch(`/api/v1/habits/${id}/`, {
       method: "DELETE",
       mode: "cors",
       credentials: "include",

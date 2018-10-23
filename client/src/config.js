@@ -1,8 +1,9 @@
+// only use in splited delopyment
 const env = process.env.NODE_ENV;
 const devRoute = process.env.REACT_APP_HEROKU ? 'https://habits-backend.herokuapp.com' : 'http://localhost:3000';
 
 const development = {
-  route: 'https://habits-backend.herokuapp.com'
+  route: devRoute
 };
 
 const test = {
@@ -10,7 +11,7 @@ const test = {
 };
 
 const production = {
-  route: 'https://habits-backend.herokuapp.com'
+  route: 'http://localhost:3000'
 };
 
 const config = {
