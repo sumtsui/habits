@@ -61,11 +61,11 @@ MongoClient.connect(config.db.mlab_url, {useNewUrlParser: true}, (err, client) =
   app.use('/api/v1/users', usersRoute);
 
   // Handle 404
-  app.use((req, res) => {
-    res.status(404).json({
-      message: 'Route Not Found'
-    })
-  })
+  // app.use((req, res) => {
+  //   res.status(404).json({
+  //     message: 'Route Not Found'
+  //   })
+  // })
 
   // Global error handler
   app.use((err, req, res, next) => {
@@ -74,13 +74,13 @@ MongoClient.connect(config.db.mlab_url, {useNewUrlParser: true}, (err, client) =
   });
 
   // Serve client built files when deployed to Heroku.
-  if (process.env.NODE_ENV === "production") {
+  // if (process.env.NODE_ENV === "production") {
     app.use(express.static("client/build"));
     const path = require("path");
     app.get("*", (req, res) => {
       res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
-  });
-}
+    });
+  // }
 
 });
 
