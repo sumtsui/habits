@@ -73,6 +73,15 @@ MongoClient.connect(config.db.mlab_url, {useNewUrlParser: true}, (err, client) =
     res.status(err.status || 500).json({error: err.message});
   });
 
+  // Serve client built files when deployed to Heroku.
+  if (process.env.NODE_ENV === "production") {
+    app.use(express.static("client/build"));
+    const path = require("path");
+    app.get("*", (req, res) => {
+      res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+}
+
 });
 
 module.exports = app;

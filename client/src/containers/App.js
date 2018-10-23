@@ -5,12 +5,12 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import theme from '../theme';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-import config from '../config';
+// import config from '../config';
 import { keepLoggedIn } from '../actions';
 
 console.log('ENV', process.env.NODE_ENV);
-console.log('HEROKU', process.env.REACT_APP_HEROKU);
-console.log('Backend', config.route);
+// console.log('HEROKU', process.env.REACT_APP_HEROKU);
+// console.log('Backend', config.route);
 
 class App extends Component {
 
