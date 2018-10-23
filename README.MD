@@ -1,6 +1,6 @@
-##Routes
-- POST/api/v1/users/log-in
-- POST/api/v1/users/sign-up
+## Routes
+- POST /api/v1/users/log-in
+- POST /api/v1/users/sign-up
 - GET /api/v1/users/log-out
 
 - POST /api/v1/habits/new
