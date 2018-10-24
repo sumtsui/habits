@@ -6,7 +6,8 @@ export const getHabits = () => {
   headers.append('jwt', jwt);
 
   return (dispatch) => {
-    dispatch({ type: types.HABIT_ASYNC_START });
+    console.log('%c new data get!', 'color: blue')
+    dispatch({ type: types.HABIT_GET_ALL_START });
     fetch(`/api/v1/habits/all`, {
       headers 
     })
@@ -14,7 +15,7 @@ export const getHabits = () => {
       .then(json => {
         // Sort habits by pos
         if (json.habits) {
-          json.habits.sort((a, b) => a.pos > b.pos);
+          json.habits.sort((a, b) => a.pos - b.pos);
           dispatch({
             type: types.HABIT_GET_ALL_DONE,
             payload: json.habits
@@ -62,7 +63,7 @@ export const saveChange = (data) => {
   const habits = data.map((habit, index) => ({ title: habit.title, pos: index }));
 
   return (dispatch) => {
-    dispatch({ type: types.HABIT_ASYNC_START });
+    dispatch({ type: types.HABIT_SAVE_START });
     fetch(`/api/v1/habits/save-all`, {
       method: "PUT",
       mode: "cors",
@@ -79,15 +80,17 @@ export const saveChange = (data) => {
   }
 }
 
-export const recordHabit = (target, id) => {
+export const logHabit = (id) => {
   const jwt = localStorage.getItem('jwt');
   const headers = new Headers();
   headers.append('jwt', jwt);
   headers.append("Content-Type", "application/json; charset=utf-8");
 
   return (dispatch) => {
-    dispatch({ type: types.HABIT_RECORD_TOGGLED, payload: id });
-    dispatch({ type: types.HABIT_ASYNC_START });
+    dispatch({ 
+      type: types.HABIT_LOG_START,
+      payload: { id }
+    });
     fetch(`/api/v1/habits/${id}/records/new`, {
       method: "POST",
       mode: "cors",
@@ -97,23 +100,25 @@ export const recordHabit = (target, id) => {
       .then(res => res.json())
       .then(json => {
         dispatch({ 
-          type: types.HABIT_RECORD_DONE,
-          payload: { bool: target.checked, id }
+          type: types.HABIT_LOG_DONE,
+          payload: { id }
         })
       })
       .catch(err => dispatch({ type: types.HABIT_ASYNC_FAIL, payload: err.message }));
   }
 }
 
-export const undoRecordHabit = (target, id) => {
+export const undoLogHabit = (id) => {
   const jwt = localStorage.getItem('jwt');
   const headers = new Headers();
   headers.append('jwt', jwt);
   headers.append("Content-Type", "application/json; charset=utf-8");
   
   return (dispatch) => {
-    dispatch({ type: types.HABIT_RECORD_TOGGLED, payload: id });
-    dispatch({ type: types.HABIT_ASYNC_START });
+    dispatch({
+      type: types.HABIT_LOG_START,
+      payload: { id }
+    });
     fetch(`/api/v1/habits/${id}/records/`, {
       method: "DELETE",
       mode: "cors",
@@ -122,10 +127,9 @@ export const undoRecordHabit = (target, id) => {
     })
       .then(res => res.json())
       .then(json => {
-        target.disabled = false;
         dispatch({ 
-          type: types.HABIT_RECORD_UNDO_DONE,
-          payload: { bool: target.checked, id }
+          type: types.HABIT_LOG_DONE,
+          payload: { id }
         })
       })
       .catch(err => dispatch({ type: types.HABIT_ASYNC_FAIL, payload: err.message }));

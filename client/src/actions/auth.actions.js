@@ -1,4 +1,5 @@
 import * as types from './ActionTypes';
+import config from '../config';
 
 export const onTextChanged = e => ({
   type: types.AUTH_TEXT_CHANGED,

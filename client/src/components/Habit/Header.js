@@ -1,12 +1,11 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import {withStyles} from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
+import Button from '@material-ui/core/Button';
 import { connect } from 'react-redux';
-import { recordHabit, undoRecordHabit } from '../../actions';
+import { logHabit, undoLogHabit } from '../../actions';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import classNames from 'classnames';
 
@@ -32,41 +31,47 @@ const styles = theme => ({
   },
 });
 
-const Header = props => {
-  const { classes, title, isGood, _id, recordHabit, undoRecordHabit, todayLogged, loading, loggedID } = props;
-  const kind = isGood ? classes.good : classes.bad;
-  const color = isGood ? 'primary' : 'secondary';
-  return (
-    <div>
-      <Toolbar>
-        <Typography
-          variant="title"
-          className={classNames(classes.grow, kind)}
-        >
-          {title}
-        </Typography>
-        <FormControlLabel
-          className={classNames(classes.toggle, classes.label)}
-          control={
-            <Switch
-              checked={todayLogged}
-              onChange={(e) => {
-                (e.target.checked) 
-                ? recordHabit(e.target, _id)
-                : undoRecordHabit(e.target, _id)
-              }}
-              color={color}
-            />
-          }
-          label={
-            (loading && loggedID === _id) 
-            ? <CircularProgress size={24} className={classes.buttonProgress} color={color} /> 
-            : <Typography variant="body1" color={todayLogged ? color : 'textSecondary'} >Did it</Typography>
-          }
-        />
-      </Toolbar>
-    </div>
-  );
+class Header extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      logged: this.props.todayLogged
+    }
+  }
+
+  render () {
+    const { classes, title, isGood, _id, logHabit, undoLogHabit, loading, habitID } = this.props;
+    const kind = isGood ? classes.good : classes.bad;
+    const color = isGood ? 'primary' : 'secondary';
+    const emotion = isGood ? '😄' : '😫';
+
+    return (
+      <div>
+        <Toolbar>
+          <Typography
+            variant="title"
+            className={classNames(classes.grow, kind)}
+            children={title}
+          />
+          <Button
+            color={color}
+            variant="outlined"
+            onClick={() => {
+              this.state.logged ? undoLogHabit(_id) : logHabit(_id);
+              this.setState({ logged: !this.state.logged });
+            }}
+            children={(loading && habitID === _id)
+              ? <CircularProgress size={24} className={classes.buttonProgress} color={color} />
+              : (this.state.logged) 
+                ? emotion
+                : 'log'
+            }
+          />
+        </Toolbar>
+      </div>
+    );
+  }
 }
 
 Header.propTypes = {
@@ -75,9 +80,9 @@ Header.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    loggedID: state.habit.toggledHabitID
+    habitID: state.habit.loggedHabitID
   }
 }
 
 
-export default connect(mapStateToProps, { recordHabit, undoRecordHabit })(withStyles(styles)(Header));
+export default connect(mapStateToProps, { logHabit, undoLogHabit })(withStyles(styles)(Header));

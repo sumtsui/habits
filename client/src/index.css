@@ -9,8 +9,11 @@ div {
 
 .main-wrapper {
   min-height: 100vh;
-  min-width: 370px;
-  padding-bottom: 2em;
+  /* min-width: 370px; */
+}
+
+main {
+  min-height: calc(100vh - 4em);
 }
 
 .habit-wrapper {
@@ -18,18 +21,32 @@ div {
 }
 
 @media (min-width: 600px) {
-  .habit-wrapper {
-    margin: 1em 6.6em
+  main {
+    width: 95%;
+    margin: auto;
+  }
+  .grid-wrapper {
+    justify-content: center
   }
 }
 
-@media (min-width: 800px) {
-  .main-wrapper {
-    box-shadow: 1px 1px 10px 3px #aeaeaf;
-    max-width: 390px;
-    margin: 0 auto;
+@media (min-width: 900px) {
+  main {
+    width: 85%;
   }
-  .habit-wrapper {
-    margin: 1em
+  .grid-wrapper {
+    justify-content: flex-start
+  }
+}
+
+@media (min-width: 1200px) {
+  main {
+    width: 80%;
+  }
+}
+
+@media (min-width: 1400px) {
+  main {
+    width: 70%;
   }
 }

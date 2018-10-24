@@ -4,6 +4,7 @@ import NewHabit from '../components/NewHabit';
 import Manage from './Manage';
 import Navbar from '../components/Navbar';
 import Menu from '../components/Menu';
+import Footer from '../components/Footer';
 import { withStyles } from '@material-ui/core/styles';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -23,12 +24,14 @@ class Main extends Component {
 
   componentDidUpdate(prevProps) {
     const { changeSaved, habitAdded } = this.props;
-    console.log('Main component updated!');
     // console.log('prevProps', prevProps.changeSaved);
     // console.log('curProps', this.props.changeSaved);
-    if (prevProps.changeSaved !== changeSaved 
-    || prevProps.habitAdded !== habitAdded) {
-      console.log('Main fetching data');
+    if (prevProps.changeSaved !== changeSaved && changeSaved === true) {
+      console.log('Change saved, fetching data');
+      this.props.getHabits();
+    }
+    if (prevProps.habitAdded !== habitAdded && habitAdded === true) {
+      console.log('New Habit added, fetching data');
       this.props.getHabits();
     }
   }
@@ -70,6 +73,7 @@ class Main extends Component {
             />
           } />
         </main>
+        <Footer />
       </div>
     )
   }

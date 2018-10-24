@@ -35,7 +35,9 @@ const styles = theme => ({
     transform: 'scale(1.2)',
   },
   today: {
-    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
   }
 });
 

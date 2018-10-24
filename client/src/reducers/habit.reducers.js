@@ -3,12 +3,13 @@ import {
   HABIT_GET_ALL_DONE,
   HABIT_ADD_NEW_DONE,
   HABIT_SAVE_CHANGE_DONE,
-  HABIT_RECORD_DONE,
-  HABIT_RECORD_UNDO_DONE,
+  HABIT_LOG_DONE,
   HABIT_DELETE_DONE,
   AUTH_LOGOUT_DONE,
   HABIT_ASYNC_FAIL,
-  HABIT_RECORD_TOGGLED
+  HABIT_GET_ALL_START,
+  HABIT_SAVE_START,
+  HABIT_LOG_START
 } from '../actions/ActionTypes';
 
 import { 
@@ -23,13 +24,12 @@ const initialState = {
   habits: [],
   loading: false,
   isHabitDeleted: false,
-  todayRecordChanged: false,
   changedHabitID: '',
   deletedHabitID: '',
   error: '',
   changeSaved: false,
   habitAdded: false,
-  toggledHabitID: ''
+  loggedHabitID: ''
 }
 
 export default (state = initialState, action) => {
@@ -40,8 +40,31 @@ export default (state = initialState, action) => {
         ...state,
         loading: true,
         error: '',
+        habitAdded: false,
+        loggedHabitID: ''
+      }
+
+    case HABIT_GET_ALL_START:
+      return {
+        ...state,
+        loading: true,
+        error: '',
+      }
+
+    case HABIT_SAVE_START:
+      return {
+        ...state,
+        loading: true,
+        error: '',
         changeSaved: false,
-        habitAdded: false
+      }
+    
+    case HABIT_LOG_START:
+      return {
+        ...state,
+        loading: true,
+        error: '',
+        loggedHabitID: action.payload.id,
       }
 
     case HABIT_GET_ALL_DONE:
@@ -73,28 +96,11 @@ export default (state = initialState, action) => {
         changeSaved: true
       }
 
-    case HABIT_RECORD_DONE:
+    case HABIT_LOG_DONE:
       return {
         ...state,
-        todayRecordChanged: action.payload.bool,
-        changedHabitID: action.payload.id,
         loading: false,
-        toggledHabitID: ''
-      }
-
-    case HABIT_RECORD_UNDO_DONE:
-      return {
-        ...state,
-        todayRecordChanged: action.payload.bool,
-        changedHabitID: action.payload.id,
-        loading: false,
-        toggledHabitID: ''
-      }
-
-    case HABIT_RECORD_TOGGLED: 
-      return {
-        ...state,
-        toggledHabitID: action.payload,
+        loggedHabitID: ''
       }
 
     case HABIT_DELETE_DONE: 
