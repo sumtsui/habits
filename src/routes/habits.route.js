@@ -78,6 +78,8 @@ router.put('/save-all', async (req, res, next) => {
     .catch(next)
 })
 
+// db.users.updateOne({'habits._id': ObjectId("5bbc65e7509fc70015b42182")}, {$set: {'habits.$.title': '🐵'}})
+
 // Delete a habit
 router.delete('/:id', (req, res, next) => {
   req.db.collection('users')
