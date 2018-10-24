@@ -31,7 +31,6 @@ const styles = theme => ({
   },
   bullet: {
     display: 'block',
-    margin: '0 2px',
     transform: 'scale(1.2)',
   },
   today: {

@@ -34,11 +34,11 @@ class Habit extends Component {
             todayLogged={todayLogged}
           />
           <Data
+            isGood={habit.isGood}
             lastWeek={habit.lastWeek}
             thisMonth={habit.thisMonth}
             lastMonth={habit.lastMonth}
           />
-          <Divider />
         </Card>
       </Grid>
     )

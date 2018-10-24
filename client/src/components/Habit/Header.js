@@ -12,7 +12,7 @@ import classNames from 'classnames';
 const styles = theme => ({
   grow: {
     flexGrow: 1,
-    paddingLeft: theme.spacing.unit
+    // paddingLeft: theme.spacing.unit
   },
   toggle: {
     display: 'flex',

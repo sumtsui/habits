@@ -17,7 +17,8 @@ main {
 }
 
 .habit-wrapper {
-  margin: 1em    
+  margin: 1em;
+  padding-bottom: 1em;   
 }
 
 @media (min-width: 600px) {
@@ -47,6 +48,9 @@ main {
 
 @media (min-width: 1400px) {
   main {
-    width: 70%;
+    width: 80%;
+  }
+  .habit-wrapper {
+    padding: 1em;
   }
 }
